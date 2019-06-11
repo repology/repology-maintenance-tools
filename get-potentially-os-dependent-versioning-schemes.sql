@@ -2,8 +2,8 @@
 -- This may mean that projects have different versioning scheme in
 -- Windows and should be added to 902 ruleset
 
-WITH windows_repos AS (
-	SELECT * FROM (VALUES
+WITH windows_repos(repo) AS (
+	VALUES
 		('chocolatey'),
 		('cygwin'),
 		('just-install'),
@@ -14,7 +14,7 @@ WITH windows_repos AS (
 		('scoop'),
 		('vcpkg'),
 		('yacp')
-	) AS windows_repos(repo))
+)
 SELECT DISTINCT
 	effname
 FROM packages
