@@ -17,4 +17,4 @@ FROM packages
 GROUP BY effname
 HAVING
 	count(DISTINCT family) FILTER (WHERE versionclass = 1 AND (flags & 8)::boolean) >= 1
-ORDER BY newest_incorrect DESC, spread DESC, effname;
+ORDER BY newest_incorrect DESC, newest DESC, effname;
