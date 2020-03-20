@@ -3,7 +3,7 @@ TRUNCATE TABLE project_redirects2;
 WITH candidates AS (
 	SELECT DISTINCT
 		effname,
-		projectname_seed,
+		replace(lower(projectname_seed), '/', '-'),
 		trackname,
 		repo
 	FROM packages
@@ -19,7 +19,7 @@ WITH candidates AS (
 		trackname
 	FROM candidates
 )
-INSERT INTO project_redirects2 (
+INSERT INTO project_redirects (
 	project_id,
 	repository_id,
 	is_actual,
