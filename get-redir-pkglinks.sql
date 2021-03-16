@@ -8,9 +8,9 @@ WITH package_links AS (
 	SELECT
 		repo,
 		link_type,
-		count(*) FILTER (WHERE NOT coalesce(ipv4_success, true)) AS broken,
+		count(*) FILTER (WHERE ipv4_permanent_redirect_target is not null) AS redirects,
 		count(*) AS total,
-		min(url) FILTER (WHERE NOT coalesce(ipv4_success, true)) AS sample
+		min(url) FILTER (WHERE ipv4_permanent_redirect_target is not null) AS sample
 	FROM package_links INNER JOIN links ON (links.id = link_id)
 	WHERE
 		link_type IN (
@@ -34,11 +34,11 @@ WITH package_links AS (
 SELECT
 	repo,
 	link_type,
-	round((100.0 * broken / total)::numeric, 2) AS perc_broken,
-	broken,
+	round((100.0 * redirects / total)::numeric, 2) AS perc_redir,
+	redirects,
 	total,
 	sample
 FROM
 	repository_stats
-WHERE broken / total::float > 0.01
-ORDER BY perc_broken DESC;
+WHERE redirects / total::float > 0.01
+ORDER BY perc_redir DESC;
