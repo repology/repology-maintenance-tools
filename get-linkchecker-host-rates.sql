@@ -10,13 +10,16 @@ LIMIT 10;
 
 SELECT
 	substring(url from '.*://([^/]*)') AS "Host",
-	count(*) FILTER (WHERE next_check < now()) AS "Queued URLs",
-	count(*) FILTER (WHERE next_check < now() AND priority) AS "Queued priority URLs"
+	count(*) FILTER (WHERE next_check < now()) AS "Overdue total",
+	count(*) FILTER (WHERE next_check < now() AND last_checked IS NULL) AS "Overdue new URLs",
+	count(*) FILTER (WHERE next_check < now() AND last_checked IS NULL AND priority) AS "Overdue priority new URLs",
+	count(*) FILTER (WHERE next_check < now() AND last_checked IS NOT NULL) AS "Overdue URL updates",
+	count(*) FILTER (WHERE next_check < now() AND last_checked IS NOT NULL AND priority) AS "Overdue priority URL updates"
 FROM links
 WHERE refcount > 0
 GROUP BY "Host"
 HAVING count(*) FILTER (WHERE next_check < now()) > 100
-ORDER BY "Queued URLs" DESC
+ORDER BY count(*) FILTER (WHERE next_check < now()) DESC
 LIMIT 15;
 
 SELECT

@@ -1,4 +1,25 @@
-WITH package_links AS (
+WITH hidden AS (
+	-- documented failures which cannot be fixed right away
+	SELECT NULL AS repo, NULL AS link_type
+	UNION ALL SELECT 'dports', 13
+	UNION ALL SELECT 'alpine_3_8', 14
+	UNION ALL SELECT 'alpine_3_9', 14
+	UNION ALL SELECT 'alpine_3_10', 14
+	UNION ALL SELECT 'alpine_3_11', 14
+	UNION ALL SELECT 'alpine_3_12', 14
+	UNION ALL SELECT 'alpine_3_13', 14
+	UNION ALL SELECT 'alpine_3_14', 14
+	UNION ALL SELECT 'alpine_3_15', 14
+	UNION ALL SELECT 'alpine_3_16', 14
+	UNION ALL SELECT 'alpine_3_17', 14
+	UNION ALL SELECT 'alpine_3_18', 14
+	UNION ALL SELECT 'alpine_3_19', 14
+	UNION ALL SELECT 'alpine_edge', 14
+	UNION ALL SELECT 'opensuse_science_tumbleweed', 9
+	UNION ALL SELECT 'opensuse_science_tumbleweed', 5
+	UNION ALL SELECT 'opensuse_education_tumbleweed', 9
+	UNION ALL SELECT 'opensuse_education_tumbleweed', 5
+), package_links AS (
 	SELECT
 		repo,
 		(json_array_elements(links)->>0)::integer AS link_type,
@@ -38,7 +59,6 @@ SELECT
 	broken,
 	total,
 	sample
-FROM
-	repository_stats
-WHERE broken / total::float > 0.01
+FROM repository_stats
+WHERE broken / total::float > 0.01 AND NOT EXISTS(SELECT * FROM hidden WHERE hidden.repo = repository_stats.repo AND hidden.link_type = repository_stats.link_type)
 ORDER BY perc_broken DESC;
